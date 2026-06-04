@@ -15,12 +15,8 @@
 
 .chatPanel {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   background-color: var(--wa-chat-bg);
-}
-
-.placeholder {
-  margin: auto;
-  color: var(--wa-text-muted);
 }

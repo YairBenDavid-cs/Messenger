@@ -1,6 +1,7 @@
 import type { ReactElement } from 'react';
 import { ConversationsProvider } from '../domain/conversation/state/ConversationsProvider';
 import { Sidebar } from '../components/Sidebar/view/Sidebar';
+import { ChatPanel } from '../components/ChatPanel/view/ChatPanel';
 import styles from './MessengerPage.module.css';
 
 export function MessengerPage(): ReactElement {
@@ -11,7 +12,7 @@ export function MessengerPage(): ReactElement {
           <Sidebar />
         </aside>
         <main className={styles.chatPanel}>
-          <div className={styles.placeholder}>Select a conversation — chat panel arrives in Phase 4</div>
+          <ChatPanel />
         </main>
       </div>
     </ConversationsProvider>

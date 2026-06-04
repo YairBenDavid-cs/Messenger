@@ -10,6 +10,8 @@ export interface ConversationsContextValue {
   selectedId: string | null;
   select: (id: string) => void;
   clearSelection: () => void;
+  markReadLocally: (id: string) => void;
+  applyMessagePreview: (id: string, preview: string, at: string) => void;
 }
 
 export const ConversationsContext = createContext<ConversationsContextValue | null>(null);

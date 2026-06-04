@@ -44,9 +44,48 @@ export function ConversationsProvider({ children }: { children: ReactNode }): Re
     setSelectedId(null);
   }, []);
 
+  const markReadLocally = useCallback((id: string): void => {
+    setConversations((prev) =>
+      prev.map((conversation) =>
+        conversation.id === id ? { ...conversation, unreadCount: 0 } : conversation,
+      ),
+    );
+  }, []);
+
+  const applyMessagePreview = useCallback((id: string, preview: string, at: string): void => {
+    setConversations((prev) => {
+      const updated = prev.map((conversation) =>
+        conversation.id === id
+          ? { ...conversation, lastMessagePreview: preview, lastMessageAt: at }
+          : conversation,
+      );
+      return [...updated].sort(
+        (a, b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime(),
+      );
+    });
+  }, []);
+
   const value = useMemo<ConversationsContextValue>(
-    () => ({ conversations, status, error, selectedId, select, clearSelection }),
-    [conversations, status, error, selectedId, select, clearSelection],
+    () => ({
+      conversations,
+      status,
+      error,
+      selectedId,
+      select,
+      clearSelection,
+      markReadLocally,
+      applyMessagePreview,
+    }),
+    [
+      conversations,
+      status,
+      error,
+      selectedId,
+      select,
+      clearSelection,
+      markReadLocally,
+      applyMessagePreview,
+    ],
   );
 
   return <ConversationsContext.Provider value={value}>{children}</ConversationsContext.Provider>;
