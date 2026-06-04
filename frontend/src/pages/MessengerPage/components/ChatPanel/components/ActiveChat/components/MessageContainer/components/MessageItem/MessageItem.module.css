@@ -24,10 +24,12 @@
 
 .mine {
   background-color: var(--wa-bubble-out);
+  border-top-right-radius: 2px;
 }
 
 .theirs {
   background-color: var(--wa-bubble-in);
+  border-top-left-radius: 2px;
 }
 
 .text {

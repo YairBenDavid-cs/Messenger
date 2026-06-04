@@ -4,7 +4,12 @@
   justify-content: center;
   min-height: 100%;
   padding: var(--wa-space-4);
-  background-color: var(--wa-header-bg);
+  background: linear-gradient(
+    to bottom,
+    var(--wa-brand) 0,
+    var(--wa-brand) 160px,
+    var(--wa-header-bg) 160px
+  );
 }
 
 .card {
