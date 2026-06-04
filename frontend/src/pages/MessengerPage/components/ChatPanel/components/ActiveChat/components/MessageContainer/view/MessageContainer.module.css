@@ -1,0 +1,22 @@
+.container {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: var(--wa-space-4);
+  gap: 2px;
+}
+
+.center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--wa-text-muted);
+}
+
+.empty {
+  margin: auto;
+  color: var(--wa-text-muted);
+}

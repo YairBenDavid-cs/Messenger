@@ -1,0 +1,24 @@
+.emptyState {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--wa-space-2);
+  color: var(--wa-text-muted);
+  text-align: center;
+  padding: var(--wa-space-4);
+}
+
+.icon {
+  color: var(--wa-border);
+}
+
+.title {
+  font-size: 1.25rem;
+  color: var(--wa-text);
+}
+
+.subtitle {
+  font-size: 0.875rem;
+}

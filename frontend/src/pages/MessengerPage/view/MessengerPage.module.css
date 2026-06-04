@@ -1,0 +1,22 @@
+.layout {
+  display: flex;
+  height: 100%;
+  background-color: var(--wa-panel-bg);
+}
+
+.sidebar {
+  width: var(--wa-sidebar-width);
+  min-width: var(--wa-sidebar-min-width);
+  max-width: var(--wa-sidebar-max-width);
+  border-right: 1px solid var(--wa-border);
+  display: flex;
+  flex-direction: column;
+}
+
+.chatPanel {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--wa-chat-bg);
+}

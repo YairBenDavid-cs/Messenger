@@ -1,0 +1,30 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(11, 20, 26, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.dialog {
+  width: 100%;
+  max-width: 360px;
+  max-height: 70vh;
+  overflow-y: auto;
+  background-color: var(--wa-panel-bg);
+  border-radius: var(--wa-radius-lg);
+  padding: var(--wa-space-3);
+  box-shadow: 0 8px 24px rgba(11, 20, 26, 0.2);
+}
+
+.title {
+  font-size: 1.125rem;
+  color: var(--wa-text);
+  padding: var(--wa-space-2) var(--wa-space-2) var(--wa-space-3);
+}
+
+.list {
+  list-style: none;
+}

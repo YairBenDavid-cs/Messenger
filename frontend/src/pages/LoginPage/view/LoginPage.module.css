@@ -1,0 +1,22 @@
+.page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  padding: var(--wa-space-4);
+  background: linear-gradient(
+    to bottom,
+    var(--wa-brand) 0,
+    var(--wa-brand) 160px,
+    var(--wa-header-bg) 160px
+  );
+}
+
+.card {
+  width: 100%;
+  max-width: 380px;
+  background-color: var(--wa-panel-bg);
+  border-radius: var(--wa-radius-lg);
+  padding: var(--wa-space-4);
+  box-shadow: 0 6px 18px rgba(11, 20, 26, 0.1);
+}
