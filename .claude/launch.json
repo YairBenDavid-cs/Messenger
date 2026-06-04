@@ -4,7 +4,7 @@
     {
       "name": "frontend",
       "runtimeExecutable": "sh",
-      "runtimeArgs": ["-c", "cd frontend && npm run dev"],
+      "runtimeArgs": ["-c", "cd /Users/yairbendavid/Desktop/Chat-MVP2/frontend && npm run dev"],
       "port": 5173
     }
   ]

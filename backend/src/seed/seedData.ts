@@ -21,6 +21,13 @@ export const SEED_USERS: User[] = [
     avatarUrl: 'https://i.pravatar.cc/100?u=carol',
     password: 'password123',
   },
+
+  {
+    id: 'u-david',
+    username: 'David',
+    avatarUrl: 'https://i.pravatar.cc/100?u=david',
+    password: 'password123',
+  },
 ];
 
 const MINUTE = 60_000;

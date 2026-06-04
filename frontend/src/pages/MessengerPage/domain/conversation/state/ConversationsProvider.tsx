@@ -1,10 +1,16 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ReactElement, ReactNode } from 'react';
 import { ApiError } from '@/shared/api/ApiError';
+import type { User } from '@/shared/types/user';
 import type { Conversation } from '../types/conversation';
+import { isDraftId, makeDraftId } from '../types/conversation';
 import { listConversations } from '../api/conversations';
 import { ConversationsContext } from './ConversationsContext';
-import type { ConversationsContextValue, ConversationsStatus } from './ConversationsContext';
+import type {
+  ConversationsContextValue,
+  ConversationsStatus,
+  DraftConversation,
+} from './ConversationsContext';
 
 function sortByLastMessage(conversations: Conversation[]): Conversation[] {
   return [...conversations].sort(
@@ -17,6 +23,7 @@ export function ConversationsProvider({ children }: { children: ReactNode }): Re
   const [status, setStatus] = useState<ConversationsStatus>('loading');
   const [error, setError] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [draft, setDraft] = useState<DraftConversation | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -44,10 +51,24 @@ export function ConversationsProvider({ children }: { children: ReactNode }): Re
 
   const select = useCallback((id: string): void => {
     setSelectedId(id);
+    // Selecting a real conversation abandons any open draft.
+    if (!isDraftId(id)) {
+      setDraft(null);
+    }
   }, []);
 
   const clearSelection = useCallback((): void => {
     setSelectedId(null);
+    setDraft(null);
+  }, []);
+
+  const startDraft = useCallback((user: User): void => {
+    setDraft({ otherUserId: user.id, title: user.username, avatarUrl: user.avatarUrl });
+    setSelectedId(makeDraftId(user.id));
+  }, []);
+
+  const clearDraft = useCallback((): void => {
+    setDraft(null);
   }, []);
 
   const markReadLocally = useCallback((id: string): void => {
@@ -85,8 +106,11 @@ export function ConversationsProvider({ children }: { children: ReactNode }): Re
       status,
       error,
       selectedId,
+      draft,
       select,
       clearSelection,
+      startDraft,
+      clearDraft,
       markReadLocally,
       applyMessagePreview,
       addConversation,
@@ -96,8 +120,11 @@ export function ConversationsProvider({ children }: { children: ReactNode }): Re
       status,
       error,
       selectedId,
+      draft,
       select,
       clearSelection,
+      startDraft,
+      clearDraft,
       markReadLocally,
       applyMessagePreview,
       addConversation,

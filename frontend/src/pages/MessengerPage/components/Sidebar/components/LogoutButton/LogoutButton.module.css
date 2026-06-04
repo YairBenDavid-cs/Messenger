@@ -1,10 +1,13 @@
 .button {
+  height: var(--wa-footer-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: none;
+  border-top: 1px solid var(--wa-border);
   background-color: var(--wa-header-bg);
   color: var(--wa-text-muted);
-  padding: var(--wa-space-3);
   font-weight: 500;
-  border-top: 1px solid var(--wa-border);
 }
 
 .button:hover {
