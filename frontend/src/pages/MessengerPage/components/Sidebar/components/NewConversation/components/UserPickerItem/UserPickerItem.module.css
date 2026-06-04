@@ -1,0 +1,25 @@
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--wa-space-3);
+  width: 100%;
+  padding: var(--wa-space-2) var(--wa-space-3);
+  border: none;
+  background: transparent;
+  text-align: left;
+  border-radius: var(--wa-radius-md);
+}
+
+.item:hover:not(:disabled) {
+  background-color: var(--wa-row-hover);
+}
+
+.item:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.name {
+  color: var(--wa-text);
+  font-weight: 500;
+}

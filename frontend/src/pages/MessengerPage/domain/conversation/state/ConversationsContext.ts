@@ -12,6 +12,7 @@ export interface ConversationsContextValue {
   clearSelection: () => void;
   markReadLocally: (id: string) => void;
   applyMessagePreview: (id: string, preview: string, at: string) => void;
+  addConversation: (conversation: Conversation) => void;
 }
 
 export const ConversationsContext = createContext<ConversationsContextValue | null>(null);

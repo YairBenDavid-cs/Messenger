@@ -5,6 +5,14 @@
 }
 
 .header {
+  display: flex;
+  align-items: center;
+  gap: var(--wa-space-2);
   padding: var(--wa-space-2) var(--wa-space-3);
   background-color: var(--wa-header-bg);
+}
+
+.search {
+  flex: 1;
+  min-width: 0;
 }

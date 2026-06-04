@@ -6,6 +6,12 @@ import { listConversations } from '../api/conversations';
 import { ConversationsContext } from './ConversationsContext';
 import type { ConversationsContextValue, ConversationsStatus } from './ConversationsContext';
 
+function sortByLastMessage(conversations: Conversation[]): Conversation[] {
+  return [...conversations].sort(
+    (a, b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime(),
+  );
+}
+
 export function ConversationsProvider({ children }: { children: ReactNode }): ReactElement {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [status, setStatus] = useState<ConversationsStatus>('loading');
@@ -53,16 +59,24 @@ export function ConversationsProvider({ children }: { children: ReactNode }): Re
   }, []);
 
   const applyMessagePreview = useCallback((id: string, preview: string, at: string): void => {
-    setConversations((prev) => {
-      const updated = prev.map((conversation) =>
-        conversation.id === id
-          ? { ...conversation, lastMessagePreview: preview, lastMessageAt: at }
-          : conversation,
-      );
-      return [...updated].sort(
-        (a, b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime(),
-      );
-    });
+    setConversations((prev) =>
+      sortByLastMessage(
+        prev.map((conversation) =>
+          conversation.id === id
+            ? { ...conversation, lastMessagePreview: preview, lastMessageAt: at }
+            : conversation,
+        ),
+      ),
+    );
+  }, []);
+
+  const addConversation = useCallback((conversation: Conversation): void => {
+    setConversations((prev) =>
+      sortByLastMessage([
+        conversation,
+        ...prev.filter((existing) => existing.id !== conversation.id),
+      ]),
+    );
   }, []);
 
   const value = useMemo<ConversationsContextValue>(
@@ -75,6 +89,7 @@ export function ConversationsProvider({ children }: { children: ReactNode }): Re
       clearSelection,
       markReadLocally,
       applyMessagePreview,
+      addConversation,
     }),
     [
       conversations,
@@ -85,6 +100,7 @@ export function ConversationsProvider({ children }: { children: ReactNode }): Re
       clearSelection,
       markReadLocally,
       applyMessagePreview,
+      addConversation,
     ],
   );
 
