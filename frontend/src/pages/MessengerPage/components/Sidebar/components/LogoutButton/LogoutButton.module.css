@@ -1,0 +1,13 @@
+.button {
+  border: none;
+  background-color: var(--wa-header-bg);
+  color: var(--wa-text-muted);
+  padding: var(--wa-space-3);
+  font-weight: 500;
+  border-top: 1px solid var(--wa-border);
+}
+
+.button:hover {
+  background-color: var(--wa-row-hover);
+  color: var(--wa-text);
+}

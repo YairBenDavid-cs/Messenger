@@ -1,0 +1,23 @@
+.searchBar {
+  display: flex;
+  align-items: center;
+  gap: var(--wa-space-2);
+  background-color: var(--wa-panel-bg);
+  border: 1px solid var(--wa-border);
+  border-radius: var(--wa-radius-lg);
+  padding: 0 var(--wa-space-3);
+}
+
+.icon {
+  color: var(--wa-text-muted);
+  flex-shrink: 0;
+}
+
+.input {
+  border: none;
+  outline: none;
+  background: transparent;
+  flex: 1;
+  color: var(--wa-text);
+  padding: var(--wa-space-2) 0;
+}

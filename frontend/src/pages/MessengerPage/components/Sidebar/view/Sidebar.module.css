@@ -1,0 +1,10 @@
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.header {
+  padding: var(--wa-space-2) var(--wa-space-3);
+  background-color: var(--wa-header-bg);
+}
