@@ -2,14 +2,14 @@ import type { ReactElement } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from '@/shared/auth/AuthProvider';
 import { ProtectedRoute } from '@/shared/routing/ProtectedRoute';
-import { LoginPage } from '@/pages/LoginPage/view/LoginPage';
+import { AuthPage } from '@/pages/AuthPage/view/AuthPage';
 import { MessengerPage } from '@/pages/MessengerPage/view/MessengerPage';
 
 export function App(): ReactElement {
   return (
     <AuthProvider>
       <Routes>
-        <Route path="/login" element={<LoginPage />} />
+        <Route path="/auth" element={<AuthPage />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<MessengerPage />} />
         </Route>

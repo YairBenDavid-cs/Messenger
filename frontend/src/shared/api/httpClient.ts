@@ -42,15 +42,16 @@ async function toApiError(response: Response): Promise<ApiError> {
   let code = 'UNKNOWN';
   let message = response.statusText;
   try {
-    const data = (await response.json()) as { code?: unknown; message?: unknown };
-    if (typeof data.code === 'string') {
-      code = data.code;
+    const data = (await response.json()) as { error?: unknown; message?: unknown };
+    if (typeof data.error === 'string') {
+      code = data.error;
     }
     if (typeof data.message === 'string') {
       message = data.message;
+    } else if (Array.isArray(data.message)) {
+      message = data.message.filter((part): part is string => typeof part === 'string').join(', ');
     }
   } catch {
-    // Non-JSON error body — keep the status-derived defaults.
   }
   return new ApiError(response.status, code, message);
 }

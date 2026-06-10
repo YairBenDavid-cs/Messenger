@@ -1,8 +1,17 @@
 import type { ReactElement } from 'react';
-import type { LoginFieldProps } from '../../types/loginForm';
+import type { AuthFieldProps } from '../types/authForm';
 import styles from './PasswordField.module.css';
 
-export function PasswordField({ value, onChange, disabled }: LoginFieldProps): ReactElement {
+interface PasswordFieldProps extends AuthFieldProps {
+  autoComplete?: 'current-password' | 'new-password';
+}
+
+export function PasswordField({
+  value,
+  onChange,
+  disabled,
+  autoComplete = 'current-password',
+}: PasswordFieldProps): ReactElement {
   return (
     <label className={styles.field}>
       <span className={styles.label}>Password</span>
@@ -12,7 +21,7 @@ export function PasswordField({ value, onChange, disabled }: LoginFieldProps): R
         value={value}
         onChange={(event) => onChange(event.target.value)}
         disabled={disabled}
-        autoComplete="current-password"
+        autoComplete={autoComplete}
         placeholder="Enter your password"
       />
     </label>

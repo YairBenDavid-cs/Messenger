@@ -5,7 +5,7 @@ import { useAuth } from '@/shared/auth/useAuth';
 export function ProtectedRoute(): ReactElement {
   const { session } = useAuth();
   if (session === null) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/auth" replace />;
   }
   return <Outlet />;
 }
