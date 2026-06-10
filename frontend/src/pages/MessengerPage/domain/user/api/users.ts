@@ -7,6 +7,7 @@ const SEED_USERS: User[] = [
   { id: 'u-alice', username: 'Alice', avatarUrl: 'https://i.pravatar.cc/100?u=alice' },
   { id: 'u-bob', username: 'Bob', avatarUrl: 'https://i.pravatar.cc/100?u=bob' },
   { id: 'u-carol', username: 'Carol', avatarUrl: 'https://i.pravatar.cc/100?u=carol' },
+  { id: 'u-david', username: 'David', avatarUrl: 'https://i.pravatar.cc/100?u=david' },
 ];
 
 export function listUsers(): Promise<User[]> {

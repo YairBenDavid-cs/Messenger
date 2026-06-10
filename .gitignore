@@ -1,5 +1,7 @@
 # Dependencies
 node_modules/
+jspm_packages/
+web_modules/
 .pnp
 .pnp.js
 
@@ -7,6 +9,8 @@ node_modules/
 dist/
 dist-ssr/
 build/
+.next/
+out/
 *.local
 
 # Environment variables (keep .env.example tracked)

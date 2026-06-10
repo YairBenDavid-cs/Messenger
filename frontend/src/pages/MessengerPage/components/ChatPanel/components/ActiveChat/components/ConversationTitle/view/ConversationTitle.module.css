@@ -1,0 +1,13 @@
+.title {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--wa-space-3);
+  padding: var(--wa-space-2) var(--wa-space-3);
+  background-color: var(--wa-header-bg);
+}
+
+.name {
+  color: var(--wa-text);
+  font-weight: 500;
+}
