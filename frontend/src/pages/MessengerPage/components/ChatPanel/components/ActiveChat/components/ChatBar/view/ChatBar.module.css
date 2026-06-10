@@ -1,5 +1,6 @@
 .chatBar {
   flex-shrink: 0;
+  height: var(--wa-footer-height);
   display: flex;
   align-items: center;
   gap: var(--wa-space-2);

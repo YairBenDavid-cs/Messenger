@@ -28,3 +28,9 @@
 .list {
   list-style: none;
 }
+
+.message {
+  color: var(--wa-text-muted);
+  padding: var(--wa-space-2);
+  font-size: 0.9375rem;
+}

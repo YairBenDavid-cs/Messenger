@@ -9,7 +9,7 @@ export function LogoutButton(): ReactElement {
 
   function onClick(): void {
     logout();
-    navigate('/login', { replace: true });
+    navigate('/auth', { replace: true });
   }
 
   return (

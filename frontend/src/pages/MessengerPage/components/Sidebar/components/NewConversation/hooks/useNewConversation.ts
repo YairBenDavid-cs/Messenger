@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ApiError } from '@/shared/api/ApiError';
-import { useAuth } from '@/shared/auth/useAuth';
 import type { User } from '@/shared/types/user';
 import { useConversations } from '@/pages/MessengerPage/domain/conversation/hooks/useConversations';
-import { createConversation } from '@/pages/MessengerPage/domain/conversation/api/conversations';
 import { listUsers } from '@/pages/MessengerPage/domain/user/api/users';
 
 interface UseNewConversation {
@@ -11,29 +9,37 @@ interface UseNewConversation {
   openDialog: () => void;
   closeDialog: () => void;
   users: User[];
+  error: string | null;
   pick: (userId: string) => void;
-  busy: boolean;
 }
 
 export function useNewConversation(): UseNewConversation {
-  const { session } = useAuth();
-  const currentUserId = session?.user.id ?? '';
-  const { conversations, addConversation, select } = useConversations();
+  const { conversations, select, startDraft } = useConversations();
   const [open, setOpen] = useState(false);
-  const [busy, setBusy] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
-    listUsers().then((all) => {
-      if (active) {
-        setUsers(all.filter((user) => user.id !== currentUserId));
-      }
-    });
+    listUsers().then(
+      (all) => {
+        if (!active) {
+          return;
+        }
+        setUsers(all);
+        setError(null);
+      },
+      (err: unknown) => {
+        if (!active) {
+          return;
+        }
+        setError(err instanceof ApiError ? err.message : 'Failed to load users');
+      },
+    );
     return () => {
       active = false;
     };
-  }, [currentUserId]);
+  }, []);
 
   // Esc closes the dialog and must win over deselect-on-Escape: capture phase + stop
   // propagation so the document-level deselect listener never sees the key.
@@ -63,33 +69,22 @@ export function useNewConversation(): UseNewConversation {
 
   const pick = useCallback(
     (userId: string): void => {
-      if (busy) {
+      const user = users.find((candidate) => candidate.id === userId);
+      if (user === undefined) {
         return;
       }
-      setBusy(true);
-      createConversation(userId).then(
-        (conversation) => {
-          addConversation(conversation);
-          select(conversation.id);
-          setBusy(false);
-          setOpen(false);
-        },
-        (err: unknown) => {
-          setBusy(false);
-          if (err instanceof ApiError && err.status === 409) {
-            const existing = conversations.find((conversation) =>
-              conversation.participants.includes(userId),
-            );
-            if (existing !== undefined) {
-              select(existing.id);
-              setOpen(false);
-            }
-          }
-        },
+      const existing = conversations.find((conversation) =>
+        conversation.participants.includes(userId),
       );
+      if (existing !== undefined) {
+        select(existing.id);
+      } else {
+        startDraft(user);
+      }
+      setOpen(false);
     },
-    [busy, conversations, addConversation, select],
+    [users, conversations, select, startDraft],
   );
 
-  return { open, openDialog, closeDialog, users, pick, busy };
+  return { open, openDialog, closeDialog, users, error, pick };
 }
