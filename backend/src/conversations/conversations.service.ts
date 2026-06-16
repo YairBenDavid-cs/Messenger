@@ -1,9 +1,4 @@
-import {
-  ConflictException,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { UsersService } from '../users/users.service';
 import type { Conversation, ConversationView } from './entities/conversation.entity';
@@ -25,10 +20,7 @@ export class ConversationsService {
     return Promise.all(conversations.map((conversation) => this.enrich(conversation, viewerId)));
   }
 
-  async createConversation(
-    viewerId: string,
-    participantIds: string[],
-  ): Promise<ConversationView> {
+  async createConversation(viewerId: string, participantIds: string[]): Promise<ConversationView> {
     const otherId = participantIds.find((id) => id !== viewerId) ?? participantIds[0];
 
     const other = await this.users.findById(otherId);
@@ -61,12 +53,7 @@ export class ConversationsService {
     await this.conversations.resetConversationUnread(id, userId);
   }
 
-  async recordNewMessage(
-    id: string,
-    senderId: string,
-    preview: string,
-    at: string,
-  ): Promise<void> {
+  async recordNewMessage(id: string, senderId: string, preview: string, at: string): Promise<void> {
     await this.conversations.updateConversationLastMessage(id, preview, at);
     const conversation = await this.conversations.findConversationById(id);
     if (conversation === null) {
@@ -81,8 +68,7 @@ export class ConversationsService {
 
   private async enrich(conversation: Conversation, viewerId: string): Promise<ConversationView> {
     const otherId =
-      conversation.participantIds.find((id) => id !== viewerId) ??
-      conversation.participantIds[0];
+      conversation.participantIds.find((id) => id !== viewerId) ?? conversation.participantIds[0];
     const other = await this.users.findById(otherId);
 
     return {

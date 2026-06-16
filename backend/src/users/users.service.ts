@@ -2,18 +2,13 @@ import { Inject, Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import * as bcrypt from 'bcrypt';
 import { User, type CreateUserInput, type PublicUser } from './entities/user.entity';
-import {
-  USER_REPOSITORY,
-  type UserRepository,
-} from './repositories/user.repository.interface';
+import { USER_REPOSITORY, type UserRepository } from './repositories/user.repository.interface';
 
 const SALT_ROUNDS = 10;
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @Inject(USER_REPOSITORY) private readonly users: UserRepository,
-  ) {}
+  constructor(@Inject(USER_REPOSITORY) private readonly users: UserRepository) {}
 
   async findById(id: string): Promise<User | null> {
     return this.users.findById(id);
@@ -37,9 +32,7 @@ export class UsersService {
 
   async list(excludeUserId?: string): Promise<PublicUser[]> {
     const users = await this.users.findAll();
-    return users
-      .filter((user) => user.id !== excludeUserId)
-      .map((user) => this.toPublicUser(user));
+    return users.filter((user) => user.id !== excludeUserId).map((user) => this.toPublicUser(user));
   }
 
   toPublicUser(user: User): PublicUser {

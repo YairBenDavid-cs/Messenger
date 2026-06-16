@@ -23,9 +23,7 @@ export class InMemoryMessageRepository implements MessageRepository {
 
     const cursorTime = cursor !== undefined ? this.decodeCursor(cursor) : undefined;
     const eligible =
-      cursorTime !== undefined
-        ? all.filter((message) => message.createdAt < cursorTime)
-        : all;
+      cursorTime !== undefined ? all.filter((message) => message.createdAt < cursorTime) : all;
 
     const page = eligible.slice(Math.max(0, eligible.length - limit));
 

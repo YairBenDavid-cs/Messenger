@@ -22,11 +22,7 @@ export class MessagesService {
     return await this.messages.findMessagesByConversation(conversationId, cursor);
   }
 
-  async sendMessage(
-    conversationId: string,
-    senderId: string,
-    text: string,
-  ): Promise<Message> {
+  async sendMessage(conversationId: string, senderId: string, text: string): Promise<Message> {
     const message: Message = {
       id: randomUUID(),
       conversationId,

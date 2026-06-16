@@ -1,13 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { SEED_USERS } from '../../seed/seedData';
+import { SEED_USERS } from '../../seed/seed-data';
 import type { User } from '../entities/user.entity';
 import type { UserRepository } from './user.repository.interface';
 
 @Injectable()
 export class InMemoryUserRepository implements UserRepository {
-  private readonly users = new Map<string, User>(
-    SEED_USERS.map((user) => [user.id, user]),
-  );
+  private readonly users = new Map<string, User>(SEED_USERS.map((user) => [user.id, user]));
 
   async findById(id: string): Promise<User | null> {
     return this.users.get(id) ?? null;

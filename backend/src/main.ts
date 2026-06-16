@@ -11,13 +11,14 @@ async function bootstrap(): Promise<void> {
   const corsOrigin = config.get<string>('CORS_ORIGIN', 'http://localhost:5173');
 
   app.enableCors({ origin: corsOrigin });
-  app.useGlobalPipes(new ValidationPipe({ 
-    whitelist: true,
-    forbidNonWhitelisted: true,
-    transform: true,
-  }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
   app.enableShutdownHooks();
-
 
   await app.listen(port);
   console.log(`Server running on http://localhost:${port}`);

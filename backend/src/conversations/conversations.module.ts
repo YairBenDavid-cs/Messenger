@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { SEED_CONVERSATIONS } from '../seed/seedData';
+import { SEED_CONVERSATIONS } from '../seed/seed-data';
 import { UsersModule } from '../users/users.module';
 import { ConversationsController } from './conversations.controller';
 import { ConversationsService } from './conversations.service';
