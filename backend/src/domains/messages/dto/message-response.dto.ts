@@ -1,4 +1,4 @@
-export interface Message {
+export interface MessageView {
   id: string;
   conversationId: string;
   senderId: string;
@@ -7,6 +7,6 @@ export interface Message {
 }
 
 export interface MessagesPage {
-  messages: Message[];
+  messages: MessageView[];
   nextCursor: string | null;
 }
