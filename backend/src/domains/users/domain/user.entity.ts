@@ -24,11 +24,3 @@ export class User {
     this.createdAt = props.createdAt ?? new Date();
   }
 }
-
-export type PublicUser = Omit<User, 'passwordHash'>;
-
-export interface CreateUserInput {
-  email: string;
-  password: string;
-  name: string;
-}

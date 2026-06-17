@@ -1,8 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { randomUUID } from 'node:crypto';
 import * as bcrypt from 'bcrypt';
-import { User, type CreateUserInput, type PublicUser } from './entities/user.entity';
-import { USER_REPOSITORY, type UserRepository } from './repositories/user.repository.interface';
+import { User } from '../domain/user.entity';
+import { USER_REPOSITORY, type UserRepository } from '../domain/user.repository';
+import type { CreateUserInput } from '../dto/create-user.dto';
+import type { PublicUser } from '../dto/public-user.dto';
+import { UserPresenter } from './user.present-maper';
 
 const SALT_ROUNDS = 10;
 
@@ -20,24 +22,24 @@ export class UsersService {
 
   async create(input: CreateUserInput): Promise<User> {
     const passwordHash = await this.hashPassword(input.password);
-    const user = new User({
-      id: randomUUID(),
+    return this.users.create({
       name: input.name,
       email: input.email,
       avatarUrl: `https://i.pravatar.cc/100?u=${encodeURIComponent(input.email)}`,
       passwordHash,
     });
-    return this.users.save(user);
+  }
+
+  async findByIds(ids: string[]): Promise<Map<string, User>> {
+    const users = await this.users.findByIds(ids);
+    return new Map(users.map((user) => [user.id, user]));
   }
 
   async list(excludeUserId?: string): Promise<PublicUser[]> {
     const users = await this.users.findAll();
-    return users.filter((user) => user.id !== excludeUserId).map((user) => this.toPublicUser(user));
-  }
-
-  toPublicUser(user: User): PublicUser {
-    const { passwordHash: _passwordHash, ...publicUser } = user;
-    return publicUser;
+    return users
+      .filter((user) => user.id !== excludeUserId)
+      .map((user) => UserPresenter.toPublicUser(user));
   }
 
   async hashPassword(plain: string): Promise<string> {
