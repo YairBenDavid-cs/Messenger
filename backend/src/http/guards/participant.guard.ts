@@ -6,8 +6,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import type { Request } from 'express';
-import { ConversationsService } from '../../conversations/conversations.service';
-import type { PublicUser } from '../../users/entities/user.entity';
+import { ConversationsService } from '../../domains/conversations/application/conversations.service';
+import type { PublicUser } from '../../domains/users/dto/public-user.dto';
 
 @Injectable()
 export class ParticipantGuard implements CanActivate {
