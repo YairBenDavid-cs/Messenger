@@ -16,17 +16,17 @@ export class ConversationsService {
   ) {}
 
   async findConversationsFor(viewerId: string): Promise<Conversation[]> {
-    return this.conversations.findByParticipant(viewerId);
+    return this.conversations.findConversationsByUserId(viewerId);
   }
 
   async getById(id: string): Promise<Conversation | null> {
-    return this.conversations.findById(id);
+    return this.conversations.findByConversationId(id);
   }
 
   async createConversation(viewerId: string, otherId: string): Promise<Conversation> {
     const participantKey = buildParticipantKey(viewerId, otherId);
 
-    const existing = await this.conversations.findByParticipantKey(participantKey);
+    const existing = await this.conversations.findConversationByParticipantKey(participantKey);
     if (existing !== null) {
       throw new ConflictException('Conversation already exists');
     }
@@ -56,7 +56,7 @@ export class ConversationsService {
     session?: ClientSession,
   ): Promise<void> {
     await this.conversations.updateLastMessage(id, preview, at, session);
-    const conversation = await this.conversations.findById(id, session);
+    const conversation = await this.conversations.findByConversationId(id, session);
     if (conversation === null) {
       return;
     }

@@ -13,11 +13,11 @@ export function buildParticipantKey(idA: string, idB: string): string {
 }
 
 export interface ConversationRepository {
-  findByParticipant(userId: string): Promise<Conversation[]>;
+  findConversationsByUserId(userId: string): Promise<Conversation[]>;
 
-  findById(id: string, session?: ClientSession): Promise<Conversation | null>;
+  findByConversationId(id: string, session?: ClientSession): Promise<Conversation | null>;
 
-  findByParticipantKey(participantKey: string): Promise<Conversation | null>;
+  findConversationByParticipantKey(participantKey: string): Promise<Conversation | null>;
 
   create(data: CreateConversationData): Promise<Conversation>;
 

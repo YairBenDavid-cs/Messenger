@@ -4,7 +4,7 @@ import { MessagesService } from '../../../domains/messages/application/messages.
 import type { MessagesPage } from '../../../domains/messages/dto/message-response.dto';
 
 @Injectable()
-export class ReadMessagesService {
+export class FetchMessagesService {
   constructor(
     private readonly messages: MessagesService,
     private readonly conversations: ConversationsService,

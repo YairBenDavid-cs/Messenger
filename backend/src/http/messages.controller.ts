@@ -5,7 +5,7 @@ import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { MessagesQueryDto } from '../domains/messages/dto/messages-query.dto';
 import type { MessageView, MessagesPage } from '../domains/messages/dto/message-response.dto';
 import { SendMessageDto } from '../domains/messages/dto/send-message.dto';
-import { ReadMessagesService } from '../orchestrators/messages/fetch-messages/fetch-messages.service';
+import { FetchMessagesService } from '../orchestrators/messages/fetch-messages/fetch-messages.service';
 import { SendMessageService } from '../orchestrators/messages/send-message/send-message.service';
 import type { PublicUser } from '../domains/users/dto/public-user.dto';
 
@@ -13,7 +13,7 @@ import type { PublicUser } from '../domains/users/dto/public-user.dto';
 @UseGuards(JwtAuthGuard, ParticipantGuard)
 export class MessagesController {
   constructor(
-    private readonly readMessages: ReadMessagesService,
+    private readonly fetchMessages: FetchMessagesService,
     private readonly sendMessage: SendMessageService,
   ) {}
 
@@ -23,7 +23,7 @@ export class MessagesController {
     @Query() query: MessagesQueryDto,
     @CurrentUser() me: PublicUser,
   ): Promise<MessagesPage> {
-    return this.readMessages.list(conversationId, me.id, query.cursor, query.limit);
+    return this.fetchMessages.list(conversationId, me.id, query.cursor, query.limit);
   }
 
   @Post()

@@ -15,11 +15,11 @@ export class AuthenticateService {
   async login(dto: LoginDto): Promise<AuthResult> {
     const user = await this.users.findByEmail(dto.email);
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('User not found');
     }
     const passwordMatches = await this.users.verifyPassword(user, dto.password);
     if (!passwordMatches) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('Invalid password');
     }
     return {
       token: this.tokens.sign(user),

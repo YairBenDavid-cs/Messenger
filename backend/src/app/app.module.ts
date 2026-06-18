@@ -13,7 +13,7 @@ import { AuthenticateModule } from '../orchestrators/auth/login/login.module';
 import { RegisterModule } from '../orchestrators/auth/register/register.module';
 import { CreateConversationModule } from '../orchestrators/conversations/create-conversation/create-conversation.module';
 import { ListConversationsModule } from '../orchestrators/conversations/list-conversations/list-conversations.module';
-import { ReadMessagesModule } from '../orchestrators/messages/fetch-messages/fetch-messages.module';
+import { FetchMessagesModule } from '../orchestrators/messages/fetch-messages/fetch-messages.module';
 import { SendMessageModule } from '../orchestrators/messages/send-message/send-message.module';
 
 @Module({
@@ -28,7 +28,7 @@ import { SendMessageModule } from '../orchestrators/messages/send-message/send-m
     ListConversationsModule,
     CreateConversationModule,
     MessagesModule,
-    ReadMessagesModule,
+    FetchMessagesModule,
     SendMessageModule,
     ControllersModule,
   ],

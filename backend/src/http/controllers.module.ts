@@ -5,7 +5,7 @@ import { AuthenticateModule } from '../orchestrators/auth/login/login.module';
 import { RegisterModule } from '../orchestrators/auth/register/register.module';
 import { CreateConversationModule } from '../orchestrators/conversations/create-conversation/create-conversation.module';
 import { ListConversationsModule } from '../orchestrators/conversations/list-conversations/list-conversations.module';
-import { ReadMessagesModule } from '../orchestrators/messages/fetch-messages/fetch-messages.module';
+import { FetchMessagesModule } from '../orchestrators/messages/fetch-messages/fetch-messages.module';
 import { SendMessageModule } from '../orchestrators/messages/send-message/send-message.module';
 import { UsersModule } from '../domains/users/users.module';
 import { AuthController } from './auth.controller';
@@ -22,9 +22,8 @@ import { ParticipantGuard } from './guards/participant.guard';
     AuthenticateModule,
     ListConversationsModule,
     CreateConversationModule,
-    ReadMessagesModule,
+    FetchMessagesModule,
     SendMessageModule,
-    // ParticipantGuard reads conversation membership to authorize message routes.
     ConversationsModule,
   ],
   controllers: [AuthController, UsersController, ConversationsController, MessagesController],

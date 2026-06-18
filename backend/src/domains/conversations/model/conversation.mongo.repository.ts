@@ -16,7 +16,7 @@ export class ConversationMongoRepository implements ConversationRepository {
     private readonly model: Model<ConversationDocument>,
   ) {}
 
-  async findByParticipant(userId: string): Promise<Conversation[]> {
+  async findConversationsByUserId(userId: string): Promise<Conversation[]> {
     if (!isValidObjectId(userId)) {
       return [];
     }
@@ -27,7 +27,7 @@ export class ConversationMongoRepository implements ConversationRepository {
     return docs.map((doc) => ConversationMapper.toDomain(doc));
   }
 
-  async findById(id: string, session?: ClientSession): Promise<Conversation | null> {
+  async findByConversationId(id: string, session?: ClientSession): Promise<Conversation | null> {
     if (!isValidObjectId(id)) {
       return null;
     }
@@ -38,7 +38,7 @@ export class ConversationMongoRepository implements ConversationRepository {
     return doc ? ConversationMapper.toDomain(doc) : null;
   }
 
-  async findByParticipantKey(participantKey: string): Promise<Conversation | null> {
+  async findConversationByParticipantKey(participantKey: string): Promise<Conversation | null> {
     const doc = await this.model.findOne({ participantKey }).exec();
     return doc ? ConversationMapper.toDomain(doc) : null;
   }
