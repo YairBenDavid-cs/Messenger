@@ -6,6 +6,8 @@ interface CursorPayload {
   id: string;
 }
 
+const OBJECT_ID_PATTERN = /^[a-f0-9]{24}$/i;
+
 export function encodeCursor(cursor: Cursor): string {
   const payload: CursorPayload = {
     createdAt: cursor.createdAt.toISOString(),
@@ -17,12 +19,19 @@ export function encodeCursor(cursor: Cursor): string {
 export function decodeCursor(token: string): Cursor {
   try {
     const json = Buffer.from(token, 'base64url').toString('utf8');
-    const payload = JSON.parse(json) as CursorPayload;
-    const createdAt = new Date(payload.createdAt);
-    if (typeof payload.id !== 'string' || Number.isNaN(createdAt.getTime())) {
+    const parsed: unknown = JSON.parse(json);
+    if (typeof parsed !== 'object' || parsed === null) {
       throw new Error('malformed cursor payload');
     }
-    return { createdAt, id: payload.id };
+    const { createdAt, id } = parsed as Record<string, unknown>;
+    if (typeof id !== 'string' || !OBJECT_ID_PATTERN.test(id) || typeof createdAt !== 'string') {
+      throw new Error('malformed cursor payload');
+    }
+    const at = new Date(createdAt);
+    if (Number.isNaN(at.getTime())) {
+      throw new Error('malformed cursor payload');
+    }
+    return { createdAt: at, id };
   } catch {
     throw new BadRequestException('Invalid cursor');
   }

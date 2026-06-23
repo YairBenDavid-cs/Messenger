@@ -1,12 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
-import type { ClientSession } from 'mongoose';
+import type { UnitOfWork } from '../../../common/database/unit-of-work';
+import { DEFAULT_MESSAGE_LIMIT } from '../message-limits';
 import type { Message } from '../domain/message.entity';
 import { MESSAGE_REPOSITORY, type MessageRepository } from '../domain/message.repository';
 import type { MessagesPage } from '../dto/message-response.dto';
 import { decodeCursor, encodeCursor } from './message-cursor';
 import { MessagePresenter } from './message.presenter';
-
-const DEFAULT_LIMIT = 30;
 
 @Injectable()
 export class MessagesService {
@@ -18,7 +17,7 @@ export class MessagesService {
   async getMessages(
     conversationId: string,
     cursor?: string,
-    limit: number = DEFAULT_LIMIT,
+    limit: number = DEFAULT_MESSAGE_LIMIT,
   ): Promise<MessagesPage> {
     const decoded = cursor !== undefined ? decodeCursor(cursor) : undefined;
     const rows = await this.messages.findPage(conversationId, decoded, limit + 1);
@@ -43,8 +42,8 @@ export class MessagesService {
     conversationId: string,
     senderId: string,
     text: string,
-    session?: ClientSession,
+    uow?: UnitOfWork,
   ): Promise<Message> {
-    return this.messages.create({ conversationId, senderId, text }, session);
+    return this.messages.create({ conversationId, senderId, text }, uow);
   }
 }

@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { TokenService } from '../../../domains/auth/token.service';
 import type { LoginDto } from '../../../domains/auth/dto/login.dto';
 import { UsersService } from '../../../domains/users/application/users.service';
-import { UserPresenter } from '../../../domains/users/application/user.present-maper';
+import { UserPresenter } from '../../../domains/users/application/user.presenter';
 import type { AuthResult } from '../dto/auth-result.dto';
 
 @Injectable()

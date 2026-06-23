@@ -4,7 +4,8 @@ import { User } from '../domain/user.entity';
 import { USER_REPOSITORY, type UserRepository } from '../domain/user.repository';
 import type { CreateUserInput } from '../dto/create-user.dto';
 import type { PublicUser } from '../dto/public-user.dto';
-import { UserPresenter } from './user.present-maper';
+import { UserPresenter } from './user.presenter';
+import { IQueryHandler, QueryHandler, IQuery, Query } from '@nestjs/cqrs';
 
 const SALT_ROUNDS = 10;
 
@@ -12,9 +13,10 @@ const SALT_ROUNDS = 10;
 export class UsersService {
   constructor(@Inject(USER_REPOSITORY) private readonly users: UserRepository) {}
 
-  async findById(id: string): Promise<User | null> {
-    return this.users.findById(id);
-  }
+  // CQRS Query and QueryHandler for finding a user by ID
+
+
+
 
   async findByEmail(email: string): Promise<User | null> {
     return this.users.findByEmail(email);
@@ -48,5 +50,24 @@ export class UsersService {
 
   async verifyPassword(user: User, plain: string): Promise<boolean> {
     return bcrypt.compare(plain, user.passwordHash);
+  }
+}
+
+// Query Object
+export class FindUserByIdQuery extends Query<User | null> {
+  constructor(public readonly id: string) {
+    super();
+  }
+}
+
+// QueryHandler
+@QueryHandler(FindUserByIdQuery)
+export class FindUserByIdHandler implements IQueryHandler<FindUserByIdQuery> {
+  constructor(
+    @Inject(USER_REPOSITORY) private readonly users: UserRepository,
+  ) {}
+
+  async execute(query: FindUserByIdQuery): Promise<User | null> {
+    return this.users.findById(query.id);
   }
 }

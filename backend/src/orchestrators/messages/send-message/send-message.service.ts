@@ -14,15 +14,16 @@ export class SendMessageService {
   ) {}
 
   async send(conversationId: string, senderId: string, text: string): Promise<MessageView> {
-    const message = await this.tx.run(async (session) => {
-      const created = await this.messages.createMessage(conversationId, senderId, text, session);
-      await this.conversations.recordNewMessage(
-        conversationId,
-        senderId,
-        text,
-        created.createdAt,
-        session,
-      );
+    const message = await this.tx.run(async (uow) => {
+      const created = await this.messages.createMessage(conversationId, senderId, text, uow);
+
+      const conversation = await this.conversations.getById(conversationId, uow);
+      await this.conversations.updateLastMessage(conversationId, text, created.createdAt, uow);
+      if (conversation !== null) {
+        const recipients = conversation.participantIds.filter((id) => id !== senderId);
+        await this.conversations.incrementUnreadFor(conversationId, recipients, uow);
+      }
+
       return created;
     });
 

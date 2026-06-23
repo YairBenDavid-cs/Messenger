@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { ClientSession, FilterQuery, Model, isValidObjectId } from 'mongoose';
+import { FilterQuery, Model, isValidObjectId } from 'mongoose';
+import { sessionOf } from '../../../common/database/mongo-unit-of-work';
+import type { UnitOfWork } from '../../../common/database/unit-of-work';
 import type { Cursor, Message } from '../domain/message.entity';
 import type { CreateMessageData, MessageRepository } from '../domain/message.repository';
 import { MessageMapper } from './message.mapper';
@@ -35,8 +37,8 @@ export class MessageMongoRepository implements MessageRepository {
     return docs.map((doc) => MessageMapper.toDomain(doc));
   }
 
-  async create(data: CreateMessageData, session?: ClientSession): Promise<Message> {
-    const [doc] = await this.model.create([data], { session: session ?? undefined });
+  async create(data: CreateMessageData, uow?: UnitOfWork): Promise<Message> {
+    const [doc] = await this.model.create([data], { session: sessionOf(uow) });
     return MessageMapper.toDomain(doc);
   }
 }

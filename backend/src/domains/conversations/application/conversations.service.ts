@@ -1,5 +1,5 @@
 import { ConflictException, Inject, Injectable } from '@nestjs/common';
-import type { ClientSession } from 'mongoose';
+import type { UnitOfWork } from '../../../common/database/unit-of-work';
 import { isDuplicateKeyError } from '../../../common/database/mongo-errors';
 import type { Conversation } from '../domain/conversation.entity';
 import {
@@ -19,8 +19,8 @@ export class ConversationsService {
     return this.conversations.findConversationsByUserId(viewerId);
   }
 
-  async getById(id: string): Promise<Conversation | null> {
-    return this.conversations.findByConversationId(id);
+  async getById(id: string, uow?: UnitOfWork): Promise<Conversation | null> {
+    return this.conversations.findByConversationId(id, uow);
   }
 
   async createConversation(viewerId: string, otherId: string): Promise<Conversation> {
@@ -48,22 +48,13 @@ export class ConversationsService {
     await this.conversations.resetUnread(id, userId);
   }
 
-  async recordNewMessage(
-    id: string,
-    senderId: string,
-    preview: string,
-    at: Date,
-    session?: ClientSession,
-  ): Promise<void> {
-    await this.conversations.updateLastMessage(id, preview, at, session);
-    const conversation = await this.conversations.findByConversationId(id, session);
-    if (conversation === null) {
-      return;
-    }
-    for (const participantId of conversation.participantIds) {
-      if (participantId !== senderId) {
-        await this.conversations.incrementUnread(id, participantId, session);
-      }
+  async updateLastMessage(id: string, preview: string, at: Date, uow?: UnitOfWork): Promise<void> {
+    await this.conversations.updateLastMessage(id, preview, at, uow);
+  }
+
+  async incrementUnreadFor(id: string, userIds: string[], uow?: UnitOfWork): Promise<void> {
+    for (const userId of userIds) {
+      await this.conversations.incrementUnread(id, userId, uow);
     }
   }
 }

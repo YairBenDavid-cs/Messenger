@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+import { MAX_MESSAGE_LIMIT, MIN_MESSAGE_LIMIT } from '../message-limits';
 
 export class MessagesQueryDto {
   @IsOptional()
@@ -9,7 +10,7 @@ export class MessagesQueryDto {
   @IsOptional()
   @Type(() => Number)
   @IsInt()
-  @Min(1)
-  @Max(100)
+  @Min(MIN_MESSAGE_LIMIT)
+  @Max(MAX_MESSAGE_LIMIT)
   limit?: number;
 }

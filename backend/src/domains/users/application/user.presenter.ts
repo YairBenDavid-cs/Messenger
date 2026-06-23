@@ -7,7 +7,7 @@ export const UserPresenter = {
       id: user.id,
       name: user.name,
       email: user.email,
-      avatarUrl: user.avatarUrl,
+      avatarUrl: user.avatarUrl ?? '',
       createdAt: user.createdAt,
     };
   },

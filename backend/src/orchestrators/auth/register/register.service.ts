@@ -3,7 +3,7 @@ import { TokenService } from '../../../domains/auth/token.service';
 import type { SignupDto } from '../../../domains/auth/dto/signup.dto';
 import { isDuplicateKeyError } from '../../../common/database/mongo-errors';
 import { UsersService } from '../../../domains/users/application/users.service';
-import { UserPresenter } from '../../../domains/users/application/user.present-maper';
+import { UserPresenter } from '../../../domains/users/application/user.presenter';
 import type { AuthResult } from '../dto/auth-result.dto';
 
 @Injectable()

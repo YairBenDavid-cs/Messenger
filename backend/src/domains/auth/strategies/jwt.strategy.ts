@@ -4,7 +4,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import type { PublicUser } from '../../users/dto/public-user.dto';
 import { UsersService } from '../../users/application/users.service';
-import { UserPresenter } from '../../users/application/user.present-maper';
+import { UserPresenter } from '../../users/application/user.presenter';
 
 export interface JwtPayload {
   userId: string;

@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@nestjs/cqrs": "^11.0.3",
     "@nestjs/jwt": "^11.0.2",
     "@nestjs/passport": "^11.0.5",
     "passport": "^0.7.0",

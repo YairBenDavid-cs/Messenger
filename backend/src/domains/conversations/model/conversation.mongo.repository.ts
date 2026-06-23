@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { ClientSession, Model, isValidObjectId } from 'mongoose';
+import { Model, isValidObjectId } from 'mongoose';
+import { sessionOf } from '../../../common/database/mongo-unit-of-work';
+import type { UnitOfWork } from '../../../common/database/unit-of-work';
 import type { Conversation } from '../domain/conversation.entity';
 import type {
   ConversationRepository,
@@ -27,13 +29,13 @@ export class ConversationMongoRepository implements ConversationRepository {
     return docs.map((doc) => ConversationMapper.toDomain(doc));
   }
 
-  async findByConversationId(id: string, session?: ClientSession): Promise<Conversation | null> {
+  async findByConversationId(id: string, uow?: UnitOfWork): Promise<Conversation | null> {
     if (!isValidObjectId(id)) {
       return null;
     }
     const doc = await this.model
       .findById(id)
-      .session(session ?? null)
+      .session(sessionOf(uow) ?? null)
       .exec();
     return doc ? ConversationMapper.toDomain(doc) : null;
   }
@@ -55,22 +57,23 @@ export class ConversationMongoRepository implements ConversationRepository {
     return ConversationMapper.toDomain(doc);
   }
 
-  async updateLastMessage(
-    id: string,
-    preview: string,
-    at: Date,
-    session?: ClientSession,
-  ): Promise<void> {
+  async updateLastMessage(id: string, preview: string, at: Date, uow?: UnitOfWork): Promise<void> {
+    if (!isValidObjectId(id)) {
+      return;
+    }
     await this.model
       .updateOne({ _id: id }, { $set: { lastMessagePreview: preview, lastMessageAt: at } })
-      .session(session ?? null)
+      .session(sessionOf(uow) ?? null)
       .exec();
   }
 
-  async incrementUnread(id: string, forUserId: string, session?: ClientSession): Promise<void> {
+  async incrementUnread(id: string, forUserId: string, uow?: UnitOfWork): Promise<void> {
+    if (!isValidObjectId(id)) {
+      return;
+    }
     await this.model
       .updateOne({ _id: id }, { $inc: { [`unreadCounts.${forUserId}`]: 1 } })
-      .session(session ?? null)
+      .session(sessionOf(uow) ?? null)
       .exec();
   }
 
