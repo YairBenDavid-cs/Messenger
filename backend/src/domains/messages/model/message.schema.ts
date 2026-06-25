@@ -21,3 +21,4 @@ export type MessageDocument = HydratedDocument<MessageModel>;
 export const MessageSchema = SchemaFactory.createForClass(MessageModel);
 
 MessageSchema.index({ conversationId: 1, createdAt: -1, _id: -1 });
+MessageSchema.index({ senderId: 1, createdAt: -1 });

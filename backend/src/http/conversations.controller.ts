@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../domains/auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { CreateConversationDto } from '../domains/conversations/dto/create-conversation.dto';
 import type { ConversationView } from '../domains/conversations/dto/conversation-view.dto';
+import type { ConversationType } from '../domains/conversations/domain/conversation.entity';
 import { CreateConversationService } from '../orchestrators/conversations/create-conversation/create-conversation.service';
 import { ListConversationsService } from '../orchestrators/conversations/list-conversations/list-conversations.service';
 import type { PublicUser } from '../domains/users/dto/public-user.dto';
@@ -16,8 +17,11 @@ export class ConversationsController {
   ) {}
 
   @Get()
-  list(@CurrentUser() me: PublicUser): Promise<ConversationView[]> {
-    return this.listConversations.listFor(me.id);
+  list(
+    @CurrentUser() me: PublicUser,
+    @Query('type') type?: string,
+  ): Promise<ConversationView[]> {
+    return this.listConversations.listFor(me.id, parseConversationType(type));
   }
 
   @Post()
@@ -25,6 +29,10 @@ export class ConversationsController {
     @CurrentUser() me: PublicUser,
     @Body() dto: CreateConversationDto,
   ): Promise<ConversationView> {
-    return this.createConversation.create(me.id, dto.participantIds);
+    return this.createConversation.create(me.id, dto);
   }
+}
+
+function parseConversationType(value?: string): ConversationType | undefined {
+  return value === 'direct' || value === 'assistant' ? value : undefined;
 }

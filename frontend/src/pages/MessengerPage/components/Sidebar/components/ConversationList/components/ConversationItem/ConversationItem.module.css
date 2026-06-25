@@ -39,9 +39,15 @@
 }
 
 .time {
-  font-size: 0.75rem;
-  color: var(--wa-text-muted);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--wa-unread-badge);
   flex-shrink: 0;
+  align-self: center;
+}
+
+.timeUnread {
+  font-weight: 700;
 }
 
 .preview {

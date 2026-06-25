@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
-import { ConversationsModule } from '../../../domains/conversations/conversations.module';
-import { UsersModule } from '../../../domains/users/users.module';
+import { CreateDirectConversationModule } from '../create-direct-conversation/create-direct-conversation.module';
 import { CreateConversationService } from './create-conversation.service';
 
 @Module({
-  imports: [ConversationsModule, UsersModule],
+  imports: [CreateDirectConversationModule],
   providers: [CreateConversationService],
   exports: [CreateConversationService],
 })

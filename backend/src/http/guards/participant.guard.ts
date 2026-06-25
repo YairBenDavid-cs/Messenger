@@ -5,20 +5,23 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { QueryBus } from '@nestjs/cqrs';
 import type { Request } from 'express';
-import { ConversationsService } from '../../domains/conversations/application/conversations.service';
+import { FindConversationByIdQuery } from '../../domains/conversations/application/queries/find-conversation-by-id.query';
 import type { PublicUser } from '../../domains/users/dto/public-user.dto';
 
 @Injectable()
 export class ParticipantGuard implements CanActivate {
-  constructor(private readonly conversations: ConversationsService) {}
+  constructor(private readonly queryBus: QueryBus) {}
 
   async canActivate(ctx: ExecutionContext): Promise<boolean> {
     const req = ctx.switchToHttp().getRequest<Request>();
     const conversationId = req.params.id;
     const user = req.user as PublicUser;
 
-    const conversation = await this.conversations.getById(conversationId);
+    const conversation = await this.queryBus.execute(
+      new FindConversationByIdQuery(conversationId),
+    );
     if (conversation === null) {
       throw new NotFoundException('Conversation not found');
     }

@@ -1,10 +1,10 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { QueryBus } from '@nestjs/cqrs';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import type { PublicUser } from '../../users/dto/public-user.dto';
-import { UsersService } from '../../users/application/users.service';
-import { UserPresenter } from '../../users/application/user.presenter';
+import { resolvePublicUser } from './resolve-public-user';
 
 export interface JwtPayload {
   userId: string;
@@ -14,7 +14,7 @@ export interface JwtPayload {
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     config: ConfigService,
-    private readonly users: UsersService,
+    private readonly queryBus: QueryBus,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -24,10 +24,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: JwtPayload): Promise<PublicUser> {
-    const user = await this.users.findById(payload.userId);
-    if (!user) {
-      throw new UnauthorizedException('Invalid token');
-    }
-    return UserPresenter.toPublicUser(user);
+    return resolvePublicUser(this.queryBus, payload.userId);
   }
 }

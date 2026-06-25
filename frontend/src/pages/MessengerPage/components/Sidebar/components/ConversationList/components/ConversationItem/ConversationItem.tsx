@@ -17,6 +17,8 @@ export function ConversationItem({
 }: ConversationItemProps): ReactElement {
   const { id, title, avatarUrl, lastMessagePreview, lastMessageAt, unreadCount } = conversation;
   const className = selected ? `${styles.item} ${styles.selected}` : styles.item;
+  const hasUnread = unreadCount > 0;
+  const timeClassName = hasUnread ? `${styles.time} ${styles.timeUnread}` : styles.time;
 
   return (
     <button type="button" className={className} onClick={() => onSelect(id)}>
@@ -24,11 +26,11 @@ export function ConversationItem({
       <div className={styles.body}>
         <div className={styles.row}>
           <span className={styles.title}>{title}</span>
-          <span className={styles.time}>{formatConversationTime(lastMessageAt)}</span>
+          <span className={timeClassName}>{formatConversationTime(lastMessageAt)}</span>
         </div>
         <div className={styles.row}>
           <span className={styles.preview}>{lastMessagePreview}</span>
-          {unreadCount > 0 && <span className={styles.badge}>{unreadCount}</span>}
+          {hasUnread && <span className={styles.badge}>{unreadCount}</span>}
         </div>
       </div>
     </button>
