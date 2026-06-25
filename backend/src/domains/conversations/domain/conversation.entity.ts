@@ -1,29 +1,43 @@
+export type ConversationType = 'direct' | 'assistant';
+
 export interface ConversationProps {
   id: string;
+  type: ConversationType;
   participantIds: string[];
-  participantKey: string;
   lastMessagePreview: string;
   lastMessageAt: Date;
-  unreadCounts: Record<string, number>;
+  participantKey?: string;
+  unreadCounts?: Record<string, number>;
+  title?: string;
+  contextSummary?: string;
+  summarizedUpTo?: number;
   createdAt?: Date;
 }
 
 export class Conversation {
   readonly id: string;
+  readonly type: ConversationType;
   participantIds: string[];
-  participantKey: string;
   lastMessagePreview: string;
   lastMessageAt: Date;
+  participantKey?: string;
   unreadCounts: Record<string, number>;
+  title?: string;
+  contextSummary?: string;
+  summarizedUpTo?: number;
   readonly createdAt: Date;
 
   constructor(props: ConversationProps) {
     this.id = props.id;
+    this.type = props.type;
     this.participantIds = props.participantIds;
-    this.participantKey = props.participantKey;
     this.lastMessagePreview = props.lastMessagePreview;
     this.lastMessageAt = props.lastMessageAt;
-    this.unreadCounts = props.unreadCounts;
+    this.participantKey = props.participantKey;
+    this.unreadCounts = props.unreadCounts ?? {};
+    this.title = props.title;
+    this.contextSummary = props.contextSummary;
+    this.summarizedUpTo = props.summarizedUpTo;
     this.createdAt = props.createdAt ?? new Date();
   }
 
