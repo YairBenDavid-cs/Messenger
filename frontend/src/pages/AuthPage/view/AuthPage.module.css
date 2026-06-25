@@ -1,24 +1,32 @@
 .page {
+  /* Dark palette scoped to the auth page, matching the Assistant and Messenger
+     pages: neutral dark surfaces with a green accent. Overriding the --wa-*
+     tokens re-themes the card, fields and button without per-file edits. */
+  --wa-header-bg: #212121;
+  --wa-panel-bg: #171717;
+  --wa-text: #ececec;
+  --wa-text-muted: #9a9a9a;
+  --wa-border: #3a3a3a;
+  --wa-brand: #25d366;
+  --wa-brand-dark: #1da851;
+
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100%;
   padding: var(--wa-space-4);
-  background: linear-gradient(
-    to bottom,
-    var(--wa-brand) 0,
-    var(--wa-brand) 160px,
-    var(--wa-header-bg) 160px
-  );
+  color: var(--wa-text);
+  background: linear-gradient(180deg, #212121 0%, #171717 100%);
 }
 
 .card {
   width: 100%;
   max-width: 380px;
   background-color: var(--wa-panel-bg);
+  border: 1px solid var(--wa-border);
   border-radius: var(--wa-radius-lg);
   padding: var(--wa-space-4);
-  box-shadow: 0 6px 18px rgba(11, 20, 26, 0.1);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
 }
 
 .toggle {

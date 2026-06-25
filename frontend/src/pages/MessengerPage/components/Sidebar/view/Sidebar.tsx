@@ -1,10 +1,11 @@
 import type { ReactElement } from 'react';
+import { Link } from 'react-router-dom';
 import { useConversations } from '@/pages/MessengerPage/domain/conversation/hooks/useConversations';
 import { useConversationSearch } from '../hooks/useConversationSearch';
 import { SearchBar } from '../components/SearchBar/SearchBar';
 import { NewConversation } from '../components/NewConversation/view/NewConversation';
 import { ConversationList } from '../components/ConversationList/view/ConversationList';
-import { LogoutButton } from '../components/LogoutButton/LogoutButton';
+import { SettingsMenu } from '@/shared/ui/SettingsMenu/SettingsMenu';
 import styles from './Sidebar.module.css';
 
 export function Sidebar(): ReactElement {
@@ -19,13 +20,18 @@ export function Sidebar(): ReactElement {
         </div>
         <NewConversation />
       </div>
+      <Link to="/assistant" className={styles.assistantLink}>
+        Ask Popvich
+      </Link>
       <ConversationList
         conversations={filtered}
         status={status}
         selectedId={selectedId}
         onSelect={select}
       />
-      <LogoutButton />
+      <div className={styles.footer}>
+        <SettingsMenu />
+      </div>
     </div>
   );
 }

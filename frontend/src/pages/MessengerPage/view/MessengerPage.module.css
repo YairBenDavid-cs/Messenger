@@ -1,7 +1,27 @@
 .layout {
+  /* Dark palette scoped to the messenger page only. The neutral surfaces match
+     the AssistantPage palette so the two pages feel like one app, while the
+     green accents (sent bubble, unread badge, time) keep the WhatsApp identity.
+     These override the global --wa-* tokens for every descendant, so the
+     existing components re-theme without touching the shared light theme. */
+  --wa-header-bg: #212121;
+  --wa-panel-bg: #171717;
+  --wa-chat-bg: #212121;
+  --wa-bubble-out: #005c4b;
+  --wa-bubble-in: #2f2f2f;
+  --wa-unread-badge: #25d366;
+  --wa-text: #ececec;
+  --wa-text-muted: #9a9a9a;
+  --wa-border: #3a3a3a;
+  --wa-row-hover: #2a2a2a;
+  --wa-row-selected: #2f2f2f;
+  --wa-brand: #25d366;
+  --wa-brand-dark: #1da851;
+
   display: flex;
   height: 100%;
   background-color: var(--wa-panel-bg);
+  color: var(--wa-text);
 }
 
 .sidebar {
@@ -19,4 +39,7 @@
   display: flex;
   flex-direction: column;
   background-color: var(--wa-chat-bg);
+  /* Subtle repeating doodle pattern so the conversation area is never blank. */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='0.025' stroke-width='1.5'%3E%3Ccircle cx='20' cy='20' r='6'/%3E%3Cpath d='M52 14h16v16h-16z'/%3E%3Cpath d='M10 56l8 14 8-14z'/%3E%3Cpath d='M54 52l12 12M66 52l-12 12'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat: repeat;
 }

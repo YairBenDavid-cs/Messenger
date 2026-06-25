@@ -5,12 +5,13 @@
   align-items: center;
   gap: var(--wa-space-2);
   padding: var(--wa-space-2) var(--wa-space-3);
-  background-color: var(--wa-header-bg);
+  background-color: var(--wa-row-hover);
+  border-top: 1px solid var(--wa-border);
 }
 
 .input {
   flex: 1;
-  border: none;
+  border: 1px solid var(--wa-border);
   outline: none;
   background-color: var(--wa-panel-bg);
   border-radius: var(--wa-radius-lg);

@@ -16,3 +16,36 @@
   flex: 1;
   min-width: 0;
 }
+
+.assistantLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: var(--wa-space-3);
+  padding: var(--wa-space-3);
+  border-radius: var(--wa-radius-lg);
+  background: var(--wa-row-hover);
+  color: var(--wa-text);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.assistantLink:hover {
+  background: var(--wa-row-selected);
+}
+
+.assistantLink:active {
+  transform: scale(0.98);
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  height: var(--wa-footer-height);
+  padding: 0 var(--wa-space-3);
+  border-top: 1px solid var(--wa-border);
+  background-color: var(--wa-header-bg);
+}
