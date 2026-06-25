@@ -4,20 +4,17 @@ import { QueryBus } from '@nestjs/cqrs';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import type { PublicUser } from '../../users/dto/public-user.dto';
+import type { JwtPayload } from './jwt.strategy';
 import { resolvePublicUser } from './resolve-public-user';
 
-export interface JwtPayload {
-  userId: string;
-}
-
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class JwtQueryStrategy extends PassportStrategy(Strategy, 'jwt-query') {
   constructor(
     config: ConfigService,
     private readonly queryBus: QueryBus,
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromUrlQueryParameter('access_token'),
       ignoreExpiration: false,
       secretOrKey: config.getOrThrow<string>('JWT_SECRET'),
     });
