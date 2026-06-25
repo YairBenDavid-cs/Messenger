@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { DatabaseModule } from '../../common/database/database.module';
-import { MessagesService } from './application/messages.service';
+import { CreateMessageHandler } from './application/commands/create-message.command';
+import { GetMessagesPageHandler } from './application/queries/get-messages-page.query';
+import { SearchMyMessagesHandler } from './application/queries/search-my-messages.query';
 import { MESSAGE_REPOSITORY } from './domain/message.repository';
 import { MessageMongoRepository } from './model/message.mongo.repository';
 import { MessageModel, MessageSchema } from './model/message.schema';
@@ -11,7 +13,11 @@ import { MessageModel, MessageSchema } from './model/message.schema';
     DatabaseModule,
     MongooseModule.forFeature([{ name: MessageModel.name, schema: MessageSchema }]),
   ],
-  providers: [MessagesService, { provide: MESSAGE_REPOSITORY, useClass: MessageMongoRepository }],
-  exports: [MessagesService],
+  providers: [
+    GetMessagesPageHandler,
+    CreateMessageHandler,
+    SearchMyMessagesHandler,
+    { provide: MESSAGE_REPOSITORY, useClass: MessageMongoRepository },
+  ],
 })
 export class MessagesModule {}
