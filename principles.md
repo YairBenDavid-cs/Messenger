@@ -36,7 +36,7 @@
 - **Prefer simple code** — Every abstraction is a debt; make it earn the interest. Inline when inlining is clearer.
 - **Do one thing** — Small, single-task functions, free of hidden side effects.
 - **Make side effects obvious** — API calls, state writes, I/O, events: never a surprise.
-- **Comment only the why** — Code shows what; comments explain why, tradeoffs, and business rules. Treat a needed explanatory comment as a smell to refactor away.
+- **Domt Comment in the code** — Code shows what; Treat a needed explanatory comment as a smell to refactor away.
 - **Sniff out code smells** — Hunt God classes, giant methods, primitive obsession, and refactor them.
 - **Boy Scout rule** — Leave every file a little cleaner than you found it.
 - **Fix broken windows** — Kill bad hacks and failing tests immediately, before the rot spreads.

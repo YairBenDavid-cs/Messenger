@@ -89,6 +89,12 @@ saved message. One token per `token` event. Never leak raw model/tool internals.
 
 ## 3. Modules / CQRS / Domain
 
+> **How "CQRS" is realized (ADR 0006).** Every "command"/"query" below is an `@nestjs/cqrs`
+> Command/Query class + handler dispatched through the `CommandBus`/`QueryBus` by a thin
+> orchestrator (`controller → orchestrator → bus.execute → handler → repo`). The `QueryBus` is
+> already in use (`FindUserByIdQuery`); Week 6 introduces the `CommandBus` for writes. Coordination
+> lives only in orchestrators; handlers never orchestrate. A logging seam wraps each dispatch.
+
 Keeps the existing structure (`domains/*` leaves + `orchestrators/*` + `http/*`):
 
 - **New leaf `domains/assistant/`** — owns the `AssistantMessage`/turn repository, an internal

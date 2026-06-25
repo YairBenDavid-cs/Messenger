@@ -5,7 +5,13 @@ compiles and works at the end of every phase. Order follows "tracer bullet first
 end-to-end stream before tools, titles, or summaries are layered on.
 
 Dependency chain: **P0 → P1 → P2** are sequential (data → stream → UI). **P3, P4, P5** layer onto
-P1/P2 and can be built in any order. **P6** (hardening) comes last.
+P1/P2 and can be built in any order. **P6** (hardening) comes last for the feature itself, and
+**P7** (CQRS retrofit of Weeks 1–5) is a separate cleanup phase that runs after the feature ships.
+
+> **CQRS note (ADR 0006).** Where this guide and `week6-plan.md` say "CQRS command/query", it
+> means an `@nestjs/cqrs` Command/Query class + handler dispatched through the `CommandBus`/`QueryBus`
+> by a thin orchestrator. The `QueryBus` is already in use (`FindUserByIdQuery`); Week 6 adds the
+> `CommandBus` for writes. See ADR 0006 for the full decision.
 
 ---
 
@@ -137,6 +143,24 @@ carries earlier context via the summary.
 
 ---
 
+## Phase 7 — CQRS retrofit of Weeks 1–5 (cleanup, after the feature ships)
+
+**Goal:** one consistent command/query-bus pattern across the whole app; remove the temporary
+two-pattern coexistence noted in ADR 0006.
+
+**Backend**
+- Migrate remaining Week 1–5 **writes** onto the `CommandBus` (e.g. create-conversation,
+  send-message, mark-read, register/authenticate) as Command classes + handlers, dispatched by the
+  existing orchestrators.
+- Relocate the co-located `FindUserByIdQuery`/`FindUserByIdHandler` out of `users.service.ts` into
+  its own `application/queries/` file, matching the dedicated-file convention used for Week 6.
+- Apply the logging seam uniformly to the migrated handlers.
+
+**Gate:** all existing Week 1–5 tests stay green (this is refactor-behind-tests, no behavior change);
+`tsc --noEmit` + `build` pass; no direct domain-service write calls remain in orchestrators.
+
+---
+
 ## At-a-glance
 
 | Phase | Theme                  | Demo at the end                                   |
@@ -148,3 +172,4 @@ carries earlier context via the summary.
 | P4    | Title + structured out | Conversations auto-title, non-blocking            |
 | P5    | Context budget         | Multi-turn stays coherent within limits           |
 | P6    | Hardening              | Resilience, rate limit, evals, tests — ship-ready |
+| P7    | CQRS retrofit (W1–5)   | One consistent bus pattern app-wide               |

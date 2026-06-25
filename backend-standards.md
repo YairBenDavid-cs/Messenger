@@ -13,17 +13,28 @@
 - Inside each context, dependencies point **inward**: `interface → application → domain`, with `infrastructure` implementing domain ports. The domain depends on nothing external (no Nest, no Mongoose, no HTTP).
 - Layer responsibilities — each does exactly one job:
   - **domain/** — entities, value objects, domain events, repository *ports* (interfaces), domain services, invariants. Pure, framework-free, deterministic.
-  - **application/** — commands, queries, their handlers, orchestrators, sagas, DTOs in/out, mappers. Owns use-cases.
+  - **application/** — commands, queries, their handlers, orchestrators, DTOs in/out, mappers. Owns use-cases.
   - **infrastructure/** — Mongoose schemas, repository implementations, persistence mappers, external clients, config.
   - **interface/** — controllers, request/response DTOs, guards, pipes, HTTP concerns only.
+
+### Entities, CQRS, and exposure
+
+- **The entity is a leaf.** Each domain entity/aggregate owns **exactly one** repository and is the only code that talks to it — no cross-aggregate repository access. Around that entity live its **commands and queries**: every operation that previously sat in a service is now expressed as a command (write) or query (read) for that entity.
 - **CQRS split is strict**: commands mutate state and return nothing meaningful (or an id); queries read and never mutate. Never mix read and write in one handler. Use separate read models when read shapes diverge from write models.
-- **Command/Query handler** = the entry point for a use-case. It validates intent, loads aggregates via ports, applies domain logic, persists, dispatches domain events.
-- **Orchestrator** = coordinates *multiple* modules/services when a flow crosses bounded contexts. It calls each module's service/handler, sequences them, and returns the result. It **coordinates, never decides** — no business rules live in an orchestrator. Keep it thin.
-- **Orchestrators may nest** (orchestrator of orchestrators), but this is where god-objects creep in: every level stays decision-free and single-purpose, or the boundary has already collapsed.
-- **Saga** = reacts to domain events for long-running / cross-aggregate flows (eventual consistency, compensations). Use a saga, not an orchestrator, when the trigger is an event rather than a direct call.
-- **One responsibility per level**: Entity owns data + invariants → Service/Handler owns domain rules → Orchestrator coordinates → Saga reacts. Never tunnel through a layer.
+- **Command/Query handler** = the entry point for a use-case. It validates intent, loads aggregates via ports, applies domain logic, persists, and dispatches domain events.
+- **Exposure is deliberate.** A command/query is **private to its module by default**. Mark as exposed only the ones other modules legitimately need — those exports are the module's public contract. Internal-only commands/queries stay inside the module and are never exposed outward.
+- **A command/query never calls another command/query.** Handlers do not chain into one another — that hides control flow and smuggles coordination into a layer that should only own its own use-case. When one use-case needs another, lift the coordination up into an orchestrator that calls each handler in turn. Shared logic between handlers goes into a domain service or value object, not a handler-to-handler call.
+
+### Orchestrators
+
+- **Cross-module logic becomes an orchestrator.** When a flow (or controller) needs commands/queries from more than one module or domain, it does **not** reach across into another module's internals. It becomes an orchestrator that calls each module's exposed command/query, sequences the steps, and returns the result.
+- **Orchestrators coordinate, never decide.** No business rules live in an orchestrator — no command/query logic, no building/deciding. It may hold a thin amount of *coordination* logic (sequencing, branching between steps), but the actual domain logic stays in the entities' commands/queries.
+- **Orchestrators may nest** (an orchestrator of orchestrators), all the way up — but this is exactly where god-objects creep back in. Every level stays thin, decision-free, and single-purpose, or the responsibility boundary has already collapsed.
+
+### One responsibility per level
+
+- **Entity** → owns data + invariants. **Command/Query handler** → owns domain rules. **Orchestrator** → coordinates, never decides. Never tunnel through a layer.
 - **Extend, don't edit**: add new flows by composing new handlers/orchestrators/strategies, not by rewriting tested code (Open/Closed at the architecture level).
-- Each domain entity/aggregate owns **exactly one** repository, and is the only code that talks to it. No cross-aggregate repository access.
 - Define and respect **bounded contexts**: a concept in one context must not leak into another. Cross-context communication goes through published contracts/events, not shared internals.
 - Speak the **ubiquitous language**: classes, variables, collections, and events use the words the business uses.
 
@@ -33,7 +44,7 @@
 - **OCP** — open to extension, closed to modification; add behavior without touching tested code.
 - **LSP** — any implementation must substitute for its interface without surprising callers.
 - **ISP** — small, specific interfaces; depend only on methods you use.
-- **DIP** — high-level and low-level code both depend on abstractions. Controllers/services depend on repository *interfaces*, never concrete Mongoose models.
+- **DIP** — high-level and low-level code both depend on abstractions. Controllers/handlers depend on repository *interfaces*, never concrete Mongoose models.
 - Favor **composition over inheritance** ("has-a" over brittle "is-a" trees).
 - Use the **Strategy pattern** to swap interchangeable algorithms at runtime instead of growing `switch`/`if` chains.
 - **DRY** — every fact, type, constant, and contract lives in exactly one place. Reuse shared domain types across handlers and contracts.
@@ -47,7 +58,7 @@
 - DI rules: mark managed classes `@Injectable()`; **constructor injection only**; inject by type/abstraction; never `new` a service manually.
 - Treat services as **singletons** (one shared instance per module scope): no per-request mutable state.
 - Scaffold with the Nest CLI (`nest g ...`); don't hand-roll boilerplate.
-- Naming: `<Feature>Module`, `<Feature>Controller`, `<Feature>Service`, files `<feature>.module.ts`, `<feature>.controller.ts`, `<feature>.service.ts`. No abbreviations, no vague names. Keep files short and readable.
+- Naming: `<Feature>Module`, `<Feature>Controller`, and command/query handlers as `<Action><Feature>Handler` (files `<feature>.module.ts`, `<feature>.controller.ts`, `<action>-<feature>.command.ts` / `.query.ts` with matching `.handler.ts`). No abbreviations, no vague names. Keep files short and readable.
 
 ## 4. HTTP layer (controllers, DTOs, validation)
 
@@ -66,8 +77,8 @@
 
 ## 5. Persistence (MongoDB + Mongoose)
 
-- The **repository port** lives in the domain (an interface around domain operations, not low-level storage ops). The **Mongoose implementation** lives in infrastructure. Controllers/services/handlers depend only on the port.
-- Only the repository talks to the Mongoose model/DB. No business rules and no HTTP knowledge in repositories; no DB calls in services/controllers.
+- The **repository port** lives in the domain (an interface around domain operations, not low-level storage ops). The **Mongoose implementation** lives in infrastructure. Controllers/handlers depend only on the port.
+- Only the repository talks to the Mongoose model/DB. No business rules and no HTTP knowledge in repositories; no DB calls in handlers/controllers.
 - All repository operations are **async** (return Promises), so storage can change without touching callers.
 - Configure the connection with `MongooseModule.forRootAsync` reading `MONGO_URL` from config; use `MongooseModule.forFeature` per feature module to register its models. Self-contained modules.
 - **Schema rules**: explicit `type` for every field; `required` only when always present; `default` for optional auto-fill; built-in validators (`minlength`, `maxlength`, `min`, `max`, `enum`) over manual checks. Schemas live in the data layer and hold no business logic.
@@ -79,16 +90,16 @@
   - Prefer arrays of foreign ids on a clear owning document over link collections, unless the relationship itself carries data.
   - Add small denormalized summary fields only when they meaningfully cut reads. Never let an array grow unbounded inside a document (16 MB limit).
 - **Querying**: `find(filter, projection)` — filter chooses documents, projection chooses fields. Use comparison/`$in`/logical operators instead of filtering in code. Use **inclusion projection** (`field: 1`) for responses; never mix inclusion and exclusion (except `_id`). Fetch the minimum necessary data.
-- **Indexes** at the schema level (`schema.index(...)`), never in services. Index hot query/sort fields. Prefer compound indexes for multi-field filters/sorts; respect the **left-prefix rule** and align key direction with the sort. `unique` indexes enforce invariants. Index per real workload; avoid index bloat (each index costs writes + RAM/disk).
-- **Aggregation** for analytics/reporting, not ad-hoc code. `$match` as early as possible; `$group` only for real aggregation (`_id` = group key, everything else accumulated); `$sort` after `$group` for top-N; `$lookup` only when joining (flatten the resulting array for single matches); `$project` last to shape output. Keep business meaning (time ranges) in services; repositories take explicit dates/limits. Keep type/id consistency (ObjectId vs string, Date vs number).
+- **Indexes** at the schema level (`schema.index(...)`), never in handlers. Index hot query/sort fields. Prefer compound indexes for multi-field filters/sorts; respect the **left-prefix rule** and align key direction with the sort. `unique` indexes enforce invariants. Index per real workload; avoid index bloat (each index costs writes + RAM/disk).
+- **Aggregation** for analytics/reporting, not ad-hoc code. `$match` as early as possible; `$group` only for real aggregation (`_id` = group key, everything else accumulated); `$sort` after `$group` for top-N; `$lookup` only when joining (flatten the resulting array for single matches); `$project` last to shape output. Keep business meaning (time ranges) in handlers; repositories take explicit dates/limits. Keep type/id consistency (ObjectId vs string, Date vs number).
 - **Pagination**: cursor-based, not `skip`/offset, for changing timelines. Define a stable total ordering (`createdAt` + unique tie-breaker like `_id`); fix the sort across pages; use "after/before this item" with **strict inequalities** (`<`/`>`) to avoid duplicates/gaps. Implement as filter → sort → limit. Align the compound index with the query. Cursors are opaque encoded tokens.
 
 ## 6. DAO / DTO boundary & mappers
 
-- **DAO** (Mongoose document shape) stays inside the persistence layer; never returned from controllers or services.
-- Map DAO → domain/DTO with **dedicated, pure mapper functions** (no I/O, no side effects), written **field-by-field** to prevent accidental leaks. Centralize mappers per feature; call them in the service/handler layer, not in controllers.
+- **DAO** (Mongoose document shape) stays inside the persistence layer; never returned from controllers or handlers.
+- Map DAO → domain/DTO with **dedicated, pure mapper functions** (no I/O, no side effects), written **field-by-field** to prevent accidental leaks. Centralize mappers per feature; call them in the handler layer, not in controllers.
 - Never leak Mongo internals across the API boundary: rename `_id → id`, strip `__v`, soft-delete markers, internal flags; never expose passwords/tokens/secrets; normalize non-JSON types (Date → ISO string, ObjectId → string).
-- Services/handlers return **DTOs only**; controllers never see DAOs.
+- Handlers return **DTOs only**; controllers never see DAOs.
 
 ## 7. Errors & validation boundary
 
@@ -97,7 +108,7 @@
 - **Machine-readable codes** (`UPPER_SNAKE_CASE`, namespaced) drive client logic; human messages are for humans and may change freely without breaking clients.
 - Throw **Nest HTTP exceptions** / a domain `ApiError` type carrying HTTP status + code + message; never hand-craft error responses in handlers.
 - **Centralize** formatting in one global exception filter. No duplicated try/catch + response logic per controller.
-- **Fail fast** at the controller/pipe boundary on malformed input (`400`). Domain/business-rule validation lives in services and value objects and signals errors in a framework-agnostic way.
+- **Fail fast** at the controller/pipe boundary on malformed input (`400`). Domain/business-rule validation lives in command/query handlers and value objects and signals errors in a framework-agnostic way.
 - Status mapping: `4xx` = client/contract fault (`400` invalid, `401` unauthenticated, `403` forbidden, `404` not found, `409` conflict). `5xx` = unexpected server fault only — never use `500` to mask a client mistake.
 - Validators are **pure and reusable**: stateless, side-effect free; return typed values or throw a known error.
 
@@ -118,13 +129,13 @@
 
 ## 10. Auth & security
 
-- Keep authentication in a dedicated `AuthModule`; user data logic in a separate `UsersModule`; layer controller → service → repository.
+- Keep authentication in a dedicated `AuthModule`; user data logic in a separate `UsersModule`; layer controller → command/query handler → repository.
 - **Always hash passwords** with a password-hashing algorithm (bcrypt), never plain hashes (MD5/SHA-*). Tune the cost factor via env; rely on bcrypt's built-in salt; store only the single hash string. Verify via `compare`, never by reversing.
-- Centralize hashing in a `PasswordService`, used only at the service layer. Never log plaintext passwords anywhere.
+- Centralize hashing in a `PasswordService`, used only inside the handler/domain layer. Never log plaintext passwords anywhere.
 - Issue JWTs via `JwtModule`/`JwtService`; secret in env (e.g. `AUTH_SECRET`); minimal payload (id + minimal identity); sensible expiration. Use short-lived access tokens + tracked refresh tokens with server-side revocation.
 - Use **Passport + `passport-jwt`** as the strategy; `validate()` returns the request user. Protect routes with a reusable `JwtAuthGuard` applied at controller or route level — not per-handler logic. Guards are thin: allow/deny only, no heavy logic.
 - Use a custom `@CurrentUser()` param decorator (in `common/decorators/`) to inject `req.user`; don't re-parse or re-verify the JWT in controllers.
-- Separation: **authentication → guards**, **authorization & domain rules → services**.
+- Separation: **authentication → guards**, **authorization & domain rules → command/query handlers**.
 - Never return passwords, tokens, or secrets in responses. Return generic messages on login failure (don't reveal whether email or password was wrong). Keep secrets out of source control.
 
 ## 11. Cross-cutting Nest building blocks
@@ -147,14 +158,14 @@
 ## 13. Testing
 
 - Use **Jest** (+ supertest for HTTP). Test **real behavior** — what a caller does — not internal construction. A test that can't fail isn't a test.
-- Unit-test domain logic, services/handlers, mappers, and validators in isolation (no framework, no DB) — DI makes this easy via mocked ports.
+- Unit-test domain logic, command/query handlers, mappers, and validators in isolation (no framework, no DB) — DI makes this easy via mocked ports.
 - Assert mappers include/exclude the right fields and that DTOs never carry DB-specific or sensitive fields. Treat these as guards against future leaks.
 - e2e-test the HTTP contract (status codes, envelope, error shape) end-to-end.
 - Refactor only behind passing tests; never change internal structure without tests guarding external behavior.
 
 ## 14. Code craft & process
 
-- **Make intent obvious** — if a name needs a comment, the name is wrong. Comment the *why* (tradeoffs, business rules), not the *what*; treat a needed explanatory comment as a refactor smell.
+- **Make intent obvious** — if a name needs a comment, the name is wrong. dont commit at the code at all
 - **Do one thing** — small, single-task functions, free of hidden side effects. Prefer simple, inlined code over premature abstraction; every abstraction is debt that must earn its interest.
 - **Boy Scout rule** — leave each file cleaner than you found it. **Fix broken windows** — remove bad hacks and failing tests before rot spreads. **Remove dead code** — it lies to the next reader.
 - **Shoot tracer bullets** — build a thin end-to-end skeleton first, then flesh it out.
