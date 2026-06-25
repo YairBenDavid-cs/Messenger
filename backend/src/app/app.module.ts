@@ -4,6 +4,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { DatabaseModule } from '../common/database/database.module';
 import { LoggingInterceptor } from '../common/interceptors/logging.interceptor';
+import { AssistantModule } from '../domains/assistant/assistant.module';
 import { AuthModule } from '../domains/auth/auth.module';
 import { ConversationsModule } from '../domains/conversations/conversations.module';
 import { MessagesModule } from '../domains/messages/messages.module';
@@ -15,10 +16,11 @@ import { CqrsModule } from '@nestjs/cqrs';
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     DatabaseModule,
-    CqrsModule,
+    CqrsModule.forRoot(),
     UsersModule,
     AuthModule,
     ConversationsModule,
+    AssistantModule,
     MessagesModule,
     ControllersModule,
   ],
